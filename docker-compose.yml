@@ -1,0 +1,35 @@
+services:
+  app:
+    image: mohamedabozaid/chat-ai:latest
+    container_name: chatbot_app
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      MONGO_URI: mongodb://admin:password@mongodb:27017/chatbot_db?authSource=admin
+    depends_on:
+      - mongodb
+    networks:
+      - chat_ai
+
+  mongodb:
+    image: mongo:5.0
+    container_name: chatbot_mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    networks:
+      - chat_ai
+
+volumes:
+  mongodb_data:
+
+networks:
+  chat_ai:
+    driver: bridge
